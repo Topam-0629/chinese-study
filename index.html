@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>중국어 2·4·6과</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1f;--sub:#6b6b70;--line:#e3e1dc;--acc:#c8372d;--ok:#1f8a4c;--warn:#c27c0e;--bad:#c8372d;--tag:#efece6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17171a;--card:#222226;--ink:#f1f1f3;--sub:#a0a0a8;--line:#36363c;--acc:#ff6b5e;--ok:#4cc27e;--warn:#e7a73a;--bad:#ff6b5e;--tag:#2d2d33}}
+:root[data-theme="dark"]{--bg:#17171a;--card:#222226;--ink:#f1f1f3;--sub:#a0a0a8;--line:#36363c;--acc:#ff6b5e;--ok:#4cc27e;--warn:#e7a73a;--bad:#ff6b5e;--tag:#2d2d33}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","PingFang SC",sans-serif;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font-size:15px;cursor:pointer}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;font-size:14px;color:var(--sub);margin-bottom:12px}
+.bar label{display:inline-flex;gap:4px;align-items:center;cursor:pointer}
+.bar select,.bar button{font:inherit;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.tag{background:var(--tag);color:var(--sub);font-size:12px;padding:2px 8px;border-radius:6px}
+.tag.s{color:var(--warn)}
+.ko{font-size:34px;font-weight:700;word-break:keep-all}
+.ko.sm{font-size:26px}
+.hint{font-size:14px;color:var(--sub)}
+.py{font-size:52px;font-weight:700;letter-spacing:.5px;color:var(--acc)}
+.py.sm{font-size:30px}
+.hz{font-size:30px}
+.hz.sm{font-size:24px}
+input.ans{font-size:26px;padding:10px 14px;width:min(520px,100%);text-align:center;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+input.ans:focus{border-color:var(--ink)}
+.res{font-size:18px;font-weight:700;min-height:27px}
+.res.ok{color:var(--ok)}.res.warn{color:var(--warn)}.res.bad{color:var(--bad)}
+.keys{font-size:13px;color:var(--sub);margin-top:10px;text-align:center}
+kbd{background:var(--tag);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-family:inherit;font-size:12px}
+.prog{font-size:14px;color:var(--sub);text-align:center;margin:8px 0}
+.orig{font-size:14px;color:var(--sub);border-top:1px dashed var(--line);padding-top:8px;margin-top:4px}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--tag);font-size:13px;color:var(--sub)}
+td.big{font-size:22px}
+td.p{color:var(--acc);font-weight:700;white-space:nowrap}
+h2{font-size:20px;margin:22px 0 8px}
+h3{font-size:17px;margin:18px 0 6px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:10px 0}
+.box p{margin:6px 0}
+.ex{font-size:17px}.ex .zh{font-size:19px}.ex .pp{color:var(--acc)}
+.list .row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:6px 0}
+.list .row .a{display:none;margin-top:6px}
+.list.show .row .a{display:block}
+.formula{font-size:17px;font-weight:700;background:var(--tag);padding:8px 12px;border-radius:10px;display:inline-block}
+.hide{display:none!important}
+.done{font-size:22px;font-weight:700}
+.tbs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.tb{font:inherit;font-size:18px;font-weight:700;padding:14px 22px;min-width:110px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;touch-action:manipulation}
+.tb.g{background:var(--ok);color:#fff;border-color:var(--ok)}.tb.r{background:var(--bad);color:#fff;border-color:var(--bad)}
+.tb:active{transform:scale(.97)}
+@media (max-width:600px){.ko{font-size:26px}.py{font-size:38px}.card{padding:20px 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav id="nav">
+  <button data-t="w" class="on">① 단어 학습</button>
+  <button data-t="x">② 단어 테스트</button>
+  <button data-t="u">③ 단위(양사) 13개</button>
+  <button data-t="s">④ 문장 테스트</button>
+  <button data-t="o">⑤ 중국어 어순</button>
+</nav>
+
+<!-- 단어 학습 -->
+<section id="t-w">
+  <div class="bar">
+    <span>단원</span>
+    <label><input type="checkbox" class="w-u" value="2" checked>2과</label>
+    <label><input type="checkbox" class="w-u" value="4" checked>4과</label>
+    <label><input type="checkbox" class="w-u" value="6" checked>6과</label>
+    <span>|</span>
+    <label><input type="checkbox" class="w-b" checked>교과서 단어</label>
+    <label><input type="checkbox" class="w-s" checked>보충(뜻 표시 없지만 중요)</label>
+    <label><input type="checkbox" class="w-shuf">섞기</label>
+  </div>
+  <div id="wq"></div>
+</section>
+
+<!-- 단어 테스트 -->
+<section id="t-x" class="hide">
+  <div class="bar">
+    <span>단원</span>
+    <label><input type="checkbox" class="x-u" value="2" checked>2과</label>
+    <label><input type="checkbox" class="x-u" value="4" checked>4과</label>
+    <label><input type="checkbox" class="x-u" value="6" checked>6과</label>
+    <span>|</span>
+    <label><input type="checkbox" class="x-b" checked>교과서 단어</label>
+    <label><input type="checkbox" class="x-s" checked>보충</label>
+    <label><input type="checkbox" class="x-tone" checked>성조까지 채점</label>
+    <label><input type="checkbox" class="x-shuf" checked>섞기</label>
+  </div>
+  <div id="xq"></div>
+</section>
+
+<!-- 단위 -->
+<section id="t-u" class="hide">
+  <div class="bar">
+    <select id="umode"><option value="table">표로 보기</option><option value="quiz">카드로 넘기며 외우기</option></select>
+  </div>
+  <div id="utable"></div>
+  <div id="uq" class="hide"></div>
+</section>
+
+<!-- 문장 -->
+<section id="t-s" class="hide">
+  <div class="bar">
+    <select id="smode"><option value="card">테스트 (몇 과에서 찾을지)</option><option value="list">전체 목록</option></select>
+    <label id="sansl" class="hide"><input type="checkbox" id="sans">정답 보이기</label>
+  </div>
+  <div id="sq"></div>
+  <div id="slist" class="list hide"></div>
+</section>
+
+<!-- 어순 -->
+<section id="t-o" class="hide"></section>
+</div>
+
+<script>
+/* ===================== 데이터 ===================== */
+// [단원, 한자, 병음, 뜻, 출처, 종류 b=교과서 단어표 s=보충]
+const W = [
+// ---- 2과 我喜欢弹钢琴 ----
+[2,'想','xiǎng','~하고 싶다','p.36','b'],[2,'参加','cānjiā','참가하다','p.36','b'],[2,'什么','shénme','무슨, 무엇','p.36','b'],
+[2,'社团','shètuán','동아리','p.36','b'],[2,'电影','diànyǐng','영화','p.36','b'],[2,'呢','ne','~는요? (되묻기)','p.36','b'],
+[2,'音乐','yīnyuè','음악','p.36','b'],[2,'喜欢','xǐhuan','좋아하다','p.36','b'],[2,'弹','tán','(악기를) 연주하다','p.36','b'],
+[2,'钢琴','gāngqín','피아노','p.36','b'],[2,'报名','bàomíng','신청하다','p.36','b'],
+[2,'欢迎','huānyíng','환영하다','p.38','b'],[2,'条件','tiáojiàn','조건','p.38','b'],[2,'只要','zhǐyào','~하기만 하면','p.38','b'],
+[2,'快','kuài','빨리','p.38','b'],[2,'时间','shíjiān','시간','p.38','b'],[2,'从','cóng','~부터','p.38','b'],[2,'到','dào','~까지','p.38','b'],
+[2,'联系','liánxì','연락(하다)','p.38','b'],[2,'方式','fāngshì','방식','p.38','b'],[2,'加入','jiārù','가입하다','p.38','b'],
+[2,'生活','shēnghuó','생활','p.38','b'],[2,'会','huì','~할 것이다','p.38','b'],[2,'更','gèng','더욱','p.38','b'],[2,'精彩','jīngcǎi','근사하다, 멋지다','p.38','b'],
+[2,'周末','zhōumò','주말','p.40','b'],[2,'有','yǒu','있다','p.40','b'],[2,'他','tā','그','p.40','b'],[2,'打','dǎ','(손이나 기구로) 치다','p.40','b'],
+[2,'韩国','Hánguó','한국','p.40','b'],[2,'篮球','lánqiú','농구','p.40','b'],[2,'足球','zúqiú','축구','p.40','b'],[2,'愿意','yuànyì','원하다','p.40','b'],
+[2,'比赛','bǐsài','경기','p.40','b'],[2,'可以','kěyǐ','~해도 된다, 가능하다','p.40','b'],
+[2,'科学','kēxué','과학','p.41','b'],[2,'实验','shíyàn','실험','p.41','b'],[2,'动漫','dòngmàn','애니메이션','p.41','b'],
+[2,'画','huà','(그림을) 그리다','p.41','b'],[2,'画儿','huàr','그림','p.41','b'],[2,'体育','tǐyù','체육','p.41','b'],
+[2,'乒乓球','pīngpāngqiú','탁구','p.41','b'],[2,'努力','nǔlì','노력하다','p.41','b'],[2,'成功','chénggōng','성공하다','p.41','b'],
+[2,'问题','wèntí','질문, 문제','p.41','b'],[2,'找','zhǎo','찾다','p.41','b'],[2,'天气','tiānqì','날씨','p.41','b'],
+[2,'出去','chūqu','나가다','p.41','b'],[2,'拍照','pāizhào','사진을 찍다','p.41','b'],
+[2,'排长龙','pái chánglóng','줄이 길게 늘어서 있다 (관용)','관용 표현','b'],[2,'门庭若市','méntíng-ruòshì','문 앞이 시장 같다 = 찾아오는 사람이 많다 (관용)','관용 표현','b'],
+// 2과 보충
+[2,'我','wǒ','나','본문','s'],[2,'你','nǐ','너','본문','s'],[2,'我们','wǒmen','우리','p.37 회화1','s'],[2,'去','qù','가다','p.37 회화1','s'],
+[2,'来','lái','오다','p.39 회화2','s'],[2,'吧','ba','~하자 (제안)','p.37 회화1','s'],[2,'就','jiù','(只要~就) 곧, 바로','p.39 회화2','s'],
+[2,'的','de','~의','p.39 회화2','s'],[2,'高中','gāozhōng','고등학교','p.39 회화2','s'],[2,'月','yuè','월','p.39 회화2','s'],[2,'日','rì','일(날짜)','p.39 회화2','s'],
+[2,'做','zuò','하다 (做实验)','p.41','s'],[2,'能','néng','~할 수 있다','p.41','s'],[2,'扫','sǎo','(QR을) 스캔하다','p.39 회화2','s'],
+[2,'书法','shūfǎ','서예','p.37 그림','s'],[2,'美术','měishù','미술','p.35 그림','s'],[2,'太极拳','tàijíquán','태극권','p.35 그림','s'],
+[2,'看','kàn','보다','본문','s'],[2,'好','hǎo','좋다','본문','s'],[2,'电影院','diànyǐngyuàn','영화관','p.40 그림','s'],
+// ---- 4과 你要买什么? ----
+[4,'要','yào','~하려고 하다','p.64','b'],[4,'买','mǎi','사다','p.64','b'],[4,'瓶','píng','병 [단위]','p.64','b'],[4,'牛奶','niúnǎi','우유','p.64','b'],
+[4,'和','hé','~와(과)','p.64','b'],[4,'一些','yìxiē','조금, 약간','p.64','b'],[4,'水果','shuǐguǒ','과일','p.64','b'],[4,'送','sòng','주다, 증정하다 (买一送一)','p.64','b'],
+[4,'啊','a','[부드러운 어감]','p.64','b'],[4,'咱们','zánmen','우리 [듣는 사람 포함]','p.64','b'],
+[4,'先','xiān','일단, 먼저','p.66','b'],[4,'结账','jiézhàng','계산하다 (4과)','p.66','b'],[4,'回去','huíqu','돌아가다','p.66','b'],[4,'给','gěi','주다','p.66','b'],
+[4,'需要','xūyào','필요하다','p.66','b'],[4,'塑料袋','sùliàodài','비닐봉지','p.66','b'],[4,'带','dài','지니다, 휴대하다','p.66','b'],[4,'了','le','[완료를 나타냄]','p.66','b'],
+[4,'环保袋','huánbǎodài','에코백','p.66','b'],[4,'一共','yígòng','모두, 합해서','p.66','b'],[4,'付','fù','지불하다','p.66','b'],[4,'一下','yíxià','좀, 한번 (동사 뒤)','p.66','b'],
+[4,'二维码','èrwéimǎ','QR 코드','p.66','b'],
+[4,'件','jiàn','벌 [옷 단위]','p.68','b'],[4,'红色','hóngsè','빨간색','p.68','b'],[4,'衣服','yīfu','옷','p.68','b'],[4,'明年','míngnián','내년','p.68','b'],
+[4,'中国','Zhōngguó','중국','p.68','b'],[4,'旅游','lǚyóu','여행하다','p.68','b'],[4,'穿','chuān','(옷·신발을) 입다, 신다','p.68','b'],[4,'这','zhè','이, 이것','p.68','b'],
+[4,'双','shuāng','켤레 [단위]','p.68','b'],[4,'鞋','xié','신발','p.68','b'],[4,'收拾','shōushi','정리하다','p.68','b'],[4,'房间','fángjiān','방','p.68','b'],
+[4,'用','yòng','쓰다, 사용하다','p.68','b'],[4,'支','zhī','자루 [펜 단위]','p.68','b'],[4,'笔','bǐ','펜','p.68','b'],
+[4,'台','tái','대 [기계 단위]','p.69','b'],[4,'平板电脑','píngbǎn diànnǎo','태블릿 PC','p.69','b'],[4,'两','liǎng','둘, 2 (수량)','p.69','b'],
+[4,'条','tiáo','벌 [치마·바지 단위]','p.69','b'],[4,'裙子','qúnzi','치마','p.69','b'],[4,'斤','jīn','근 [무게 단위, 500g]','p.69','b'],[4,'苹果','píngguǒ','사과','p.69','b'],
+[4,'查','chá','찾다 (사전 등)','p.69','b'],[4,'词典','cídiǎn','사전','p.69','b'],[4,'洗手间','xǐshǒujiān','화장실','p.69','b'],[4,'介绍','jièshào','소개하다','p.69','b'],
+[4,'梦想','mèngxiǎng','꿈','p.69','b'],
+// 4과 보충
+[4,'这个','zhège','이것, 이 (这个牛奶)','p.65 회화1','s'],[4,'买一送一','mǎi yī sòng yī','하나 사면 하나 더 (1+1)','p.65 회화1','s'],
+[4,'一人一瓶','yì rén yì píng','한 사람당 한 병','p.65 회화1','s'],[4,'一起','yìqǐ','함께, 같이','p.67 회화2','s'],[4,'行','xíng','좋아, 그래 (OK)','p.67 회화2','s'],
+[4,'钱','qián','돈','p.67 회화2','s'],[4,'您','nín','당신 (존칭)','p.67 회화2','s'],[4,'吗','ma','~니? (의문)','p.67 회화2','s'],
+[4,'不用','búyòng','필요 없다, 괜찮다','p.67 회화2','s'],[4,'多少钱','duōshao qián','얼마예요?','p.67 회화2','s'],
+[4,'块','kuài','위안 [돈 단위, 말할 때]','p.67 Tip','s'],[4,'元','yuán','위안 [돈 단위, 글로 쓸 때]','p.67 Tip','s'],
+[4,'怎么','zěnme','어떻게','p.67 회화2','s'],[4,'一百八十','yìbǎi bāshí','180','p.67 회화2','s'],[4,'不想','bù xiǎng','~하고 싶지 않다','p.68 실력쌓기','s'],
+[4,'特价','tèjià','특가','p.65 그림','s'],[4,'推荐','tuījiàn','추천','p.65 그림','s'],[4,'打八折','dǎ bā zhé','20% 할인','p.65 그림','s'],[4,'每日特价','měirì tèjià','매일 특가','p.69','s'],
+// ---- 6과 我还没吃过牛肉面 ----
+[6,'饿','è','배고프다','p.94','b'],[6,'还是','háishi','아니면 (의문문 선택)','p.94','b'],[6,'叫','jiào','시키다, 부르다','p.94','b'],[6,'外卖','wàimài','배달 음식','p.94','b'],
+[6,'面','miàn','국수','p.94','b'],[6,'附近','fùjìn','근처','p.94','b'],[6,'家','jiā','[가게를 세는 단위]','p.94','b'],[6,'面馆','miànguǎn','국숫집','p.94','b'],
+[6,'特别','tèbié','굉장히, 대단히','p.94','b'],[6,'好吃','hǎochī','맛있다','p.94','b'],[6,'现在','xiànzài','현재, 지금','p.94','b'],
+[6,'来','lái','[어떤 일을 하려 함] / 하다 (你来点吧)','p.96','b'],[6,'点','diǎn','주문하다','p.96','b'],[6,'还','hái','아직','p.96','b'],[6,'过','guo','~한 적 있다','p.96','b'],
+[6,'牛肉面','niúròumiàn','뉴러우몐 (우육면)','p.96','b'],[6,'碗','wǎn','그릇 [단위]','p.96','b'],[6,'尝','cháng','맛보다','p.96','b'],
+[6,'刀削面','dāoxiāomiàn','다오샤오몐 (도삭면)','p.96','b'],[6,'再','zài','더, 또','p.96','b'],[6,'好的','hǎo de','좋아, 그래','p.96','b'],
+[6,'服务员','fúwùyuán','종업원','p.96','b'],[6,'菜','cài','요리','p.96','b'],
+[6,'可乐','kělè','콜라','p.98','b'],[6,'咖啡','kāfēi','커피','p.98','b'],[6,'鸡','jī','닭','p.98','b'],[6,'肉','ròu','고기','p.98','b'],[6,'牛','niú','소','p.98','b'],
+[6,'或者','huòzhě','또는 (평서문 선택)','p.98','b'],[6,'包','bāo','(만두를) 빚다','p.98','b'],[6,'饺子','jiǎozi','자오쯔 (만두)','p.98','b'],[6,'读','dú','읽다','p.98','b'],
+[6,'部','bù','[서적·영화 등을 세는 단위]','p.98','b'],[6,'作品','zuòpǐn','작품','p.98','b'],[6,'豆浆','dòujiāng','더우장 (중국식 두유)','p.98','b'],[6,'京剧','jīngjù','경극','p.98','b'],
+[6,'床','chuáng','침대','p.99','b'],[6,'上','shang','위 [명사 뒤 방위사]','p.99','b'],[6,'只','zhī','마리 [동물 단위]','p.99','b'],[6,'猫','māo','고양이','p.99','b'],
+[6,'教室','jiàoshì','교실','p.99','b'],[6,'里','li','안','p.99','b'],[6,'学生','xuésheng','학생','p.99','b'],[6,'家','jiā','집','p.99','b'],
+[6,'后边','hòubian','뒤쪽','p.99','b'],[6,'座','zuò','[산·건축물 등을 세는 단위]','p.99','b'],[6,'山','shān','산','p.99','b'],
+[6,'加','jiā','더하다, 추가하다','p.99','b'],[6,'汤','tāng','국물','p.99','b'],[6,'买单','mǎidān','계산하다 (6과, 식당)','p.99','b'],
+// 6과 보충
+[6,'太…了','tài…le','너무 ~하다','p.95 회화1','s'],[6,'吃','chī','먹다','p.95 회화1','s'],[6,'喝','hē','마시다','p.98','s'],
+[6,'怎么样','zěnmeyàng','어때?','p.95 회화1','s'],[6,'学校','xuéxiào','학교','p.95 회화1','s'],[6,'那','nà','그럼 / 그(것)','p.95 회화1','s'],
+[6,'看起来','kàn qilai','보기에 ~해 보인다','p.97 회화2','s'],[6,'也','yě','~도','p.97 회화2','s'],[6,'很','hěn','매우','p.97 회화2','s'],
+[6,'没','méi','~하지 않았다 (没+V+过)','p.98','s'],[6,'尝尝','chángchang','맛 좀 보다 (동사 중첩)','p.97 Tip','s'],[6,'点菜','diǎn cài','음식을 주문하다','p.97 회화2','s'],
+[6,'点儿','diǎnr','조금 (加点儿汤)','p.99','s'],[6,'水','shuǐ','물','p.99','s'],[6,'鸡肉','jīròu','닭고기','p.98','s'],[6,'牛肉','niúròu','소고기','p.98','s'],
+[6,'炸酱面','zhájiàngmiàn','짜장면','p.97 메뉴판','s'],[6,'炒面','chǎomiàn','볶음면','p.97 메뉴판','s'],[6,'个','ge','개, 명 [가장 일반적인 단위]','p.99','s'],
+];
+
+// 단위 13개
+const U = [
+['个','ge','개, 명','사람·일반 사물 (가장 넓게 씀)','一个学生 yí ge xuésheng / 这个牛奶 zhège niúnǎi','6과 p.99 · 4과 p.65'],
+['瓶','píng','병','병에 든 것 (우유, 물, 콜라)','一瓶牛奶 yì píng niúnǎi / 一瓶水 yì píng shuǐ','4과 p.64·65 · 6과 p.99'],
+['件','jiàn','벌','옷(상의 위주)','一件红色的衣服 yí jiàn hóngsè de yīfu','4과 p.68'],
+['双','shuāng','켤레','짝을 이루는 것 (신발)','这双鞋 zhè shuāng xié','4과 p.68'],
+['支','zhī','자루','펜처럼 가늘고 긴 필기구','这支笔 zhè zhī bǐ','4과 p.68'],
+['台','tái','대','기계 (태블릿 PC 등)','一台平板电脑 yì tái píngbǎn diànnǎo','4과 p.69'],
+['条','tiáo','벌 / 개','치마·바지 등 가늘고 긴 것','两条裙子 liǎng tiáo qúnzi','4과 p.69'],
+['斤','jīn','근 (=500g)','무게 (과일 등)','三斤苹果 sān jīn píngguǒ (1500g)','4과 p.69'],
+['家','jiā','곳, 군데','가게·식당·회사','一家面馆 yì jiā miànguǎn','6과 p.94·95'],
+['碗','wǎn','그릇','그릇에 담긴 음식','一碗牛肉面 yì wǎn niúròumiàn','6과 p.96·97'],
+['部','bù','편, 부','서적·영화·작품','那部作品 nà bù zuòpǐn','6과 p.98'],
+['只','zhī','마리','동물 (고양이, 닭)','一只猫 yì zhī māo','6과 p.99'],
+['座','zuò','좌, 채','산·건축물','一座山 yí zuò shān','6과 p.99'],
+];
+// 단위 퀴즈: [한국어, 정답 단위 병음, 한자구, 구 병음]
+// 단위 퀴즈 — 교과서에 실제로 나온 표현만: [한국어, 단위 병음, 한자구, 구 병음, 위치]
+const UQ = [
+['우유 한 병','píng','一瓶牛奶','yì píng niúnǎi','4과 p.64·65'],
+['한 사람당 한 병','píng','一人一瓶','yì rén yì píng','4과 p.65 회화1'],
+['물 한 병','píng','一瓶水','yì píng shuǐ','6과 p.99 바꿔 말하기2'],
+['빨간색 옷 한 벌','jiàn','一件红色的衣服','yí jiàn hóngsè de yīfu','4과 p.68 실력쌓기1'],
+['이 신발 (켤레)','shuāng','这双鞋','zhè shuāng xié','4과 p.68 실력쌓기1'],
+['이 펜 (자루)','zhī','这支笔','zhè zhī bǐ','4과 p.68 실력쌓기2'],
+['태블릿 PC 한 대','tái','一台平板电脑','yì tái píngbǎn diànnǎo','4과 p.69 바꿔 말하기1'],
+['치마 두 벌 (옷 벌과 다름!)','tiáo','两条裙子','liǎng tiáo qúnzi','4과 p.69 바꿔 말하기1'],
+['사과 세 근 (1500g)','jīn','三斤苹果','sān jīn píngguǒ','4과 p.69 바꿔 말하기1'],
+['이 우유','ge','这个牛奶','zhège niúnǎi','4과 p.65 회화1'],
+['국숫집 한 곳','jiā','一家面馆','yì jiā miànguǎn','6과 p.95 회화1'],
+['우육면 한 그릇','wǎn','一碗牛肉面','yì wǎn niúròumiàn','6과 p.97 회화2'],
+['도삭면 한 그릇','wǎn','一碗刀削面','yì wǎn dāoxiāomiàn','6과 p.97 회화2'],
+['그 작품 (편)','bù','那部作品','nà bù zuòpǐn','6과 p.98 실력쌓기2'],
+['고양이 한 마리','zhī','一只猫','yì zhī māo','6과 p.99 바꿔 말하기1'],
+['학생 한 명','ge','一个学生','yí ge xuésheng','6과 p.99 바꿔 말하기1'],
+['산 하나','zuò','一座山','yí zuò shān','6과 p.99 바꿔 말하기1'],
+];
+
+// 문장 테스트 30개: [단원, 한국어, 중국어, 병음, 교과서 찾을 곳, 교과서 원문]
+const S = [
+[2,'너는 무슨 영화를 보고 싶니?','你想看什么电影？','Nǐ xiǎng kàn shénme diànyǐng?','2과 p.37 회화1','你想参加什么社团？'],
+[2,'체육 동아리, 나는 탁구 치는 걸 좋아해.','体育社团，我喜欢打乒乓球。','Tǐyù shètuán, wǒ xǐhuan dǎ pīngpāngqiú.','2과 p.41 바꿔 말하기1','音乐社团，我喜欢弹钢琴。'],
+[2,'주말에 우리 농구하러 가자.','周末我们去打篮球吧。','Zhōumò wǒmen qù dǎ lánqiú ba.','2과 p.40 실력쌓기1','周末我们去看电影吧。'],
+[2,'우리 나가서 사진 찍자.','我们出去拍照吧。','Wǒmen chūqu pāizhào ba.','2과 p.37 회화1 / p.40 실력쌓기1','我们去报名吧。'],
+[2,'그는 축구 경기를 보러 한국에 왔다.','他来韩国看足球比赛。','Tā lái Hánguó kàn zúqiú bǐsài.','2과 p.40 실력쌓기1','他来韩国参加足球比赛。'],
+[2,'노력하기만 하면 성공할 수 있다.','只要努力，就能成功。','Zhǐyào nǔlì, jiù néng chénggōng.','2과 p.41 바꿔 말하기2','只要喜欢音乐，就快来报名。'],
+[2,'문제가 있기만 하면 나를 찾아와.','只要有问题，就来找我。','Zhǐyào yǒu wèntí, jiù lái zhǎo wǒ.','2과 p.41 바꿔 말하기2','只要喜欢音乐，就快来报名。'],
+[2,'그가 원하기만 하면 참가해도 된다.','只要他愿意，就可以参加。','Zhǐyào tā yuànyì, jiù kěyǐ cānjiā.','2과 p.40 실력쌓기2','只要你愿意，就可以去。'],
+[2,'신청 기간: 10월 5일부터 10월 12일까지','报名时间：从十月五日到十月十二日','Bàomíng shíjiān: cóng shí yuè wǔ rì dào shí yuè shí\'èr rì','2과 p.39 회화2 (포스터)','报名时间：从9月20日到9月28日'],
+[2,'음악 동아리에 가입하면, 너의 주말 생활이 더욱 근사해질 거야!','加入音乐社团，你的周末生活会更精彩！','Jiārù yīnyuè shètuán, nǐ de zhōumò shēnghuó huì gèng jīngcǎi!','2과 p.39 회화2 (포스터)','加入我们，你的高中生活会更精彩！'],
+
+[4,'나는 태블릿 PC 한 대를 사려고 해.','我要买一台平板电脑。','Wǒ yào mǎi yì tái píngbǎn diànnǎo.','4과 p.69 바꿔 말하기1','我要买一瓶牛奶。'],
+[4,'나는 치마 두 벌을 사려고 해.','我要买两条裙子。','Wǒ yào mǎi liǎng tiáo qúnzi.','4과 p.69 바꿔 말하기1','我要买一瓶牛奶。'],
+[4,'나는 빨간색 신발 한 켤레를 사려고 해.','我要买一双红色的鞋。','Wǒ yào mǎi yì shuāng hóngsè de xié.','4과 p.68 실력쌓기1','我要买一件红色的衣服。'],
+[4,'이 사과는 1+1이야, 이거 사자.','这个苹果买一送一，买这个吧。','Zhège píngguǒ mǎi yī sòng yī, mǎi zhège ba.','4과 p.65 회화1','这个牛奶买一送一，买这个吧。'],
+[4,'내년에 나는 한국으로 여행 가려고 해.','明年我要去韩国旅游。','Míngnián wǒ yào qù Hánguó lǚyóu.','4과 p.68 실력쌓기1','明年我要去中国旅游。'],
+[4,'나는 이 옷을 입고 싶지 않아.','我不想穿这件衣服。','Wǒ bù xiǎng chuān zhè jiàn yīfu.','4과 p.68 실력쌓기1 (부정)','我不想穿这双鞋。'],
+[4,'안녕하세요! 에코백 필요하세요?','您好！需要环保袋吗？','Nín hǎo! Xūyào huánbǎodài ma?','4과 p.67 회화2','您好！需要塑料袋吗？'],
+[4,'모두 30위안입니다. 어떻게 지불하시겠어요?','一共三十块。您怎么付？','Yígòng sānshí kuài. Nín zěnme fù?','4과 p.67 회화2','一共一百八十块。您怎么付？'],
+[4,'나 화장실 좀 갔다 올게.','我去一下洗手间。','Wǒ qù yíxià xǐshǒujiān.','4과 p.69 바꿔 말하기2','我扫一下二维码。'],
+[4,'내가 너의 태블릿 PC 좀 써도 될까?','我能用一下你的平板电脑吗？','Wǒ néng yòng yíxià nǐ de píngbǎn diànnǎo ma?','4과 p.68 실력쌓기2','我能用一下这支笔吗？'],
+
+[6,'너무 배고파! 우리 우육면 먹을래 아니면 도삭면 먹을래?','太饿了！咱们吃牛肉面还是刀削面？','Tài è le! Zánmen chī niúròumiàn háishi dāoxiāomiàn?','6과 p.95 회화1','太饿了！咱们出去吃还是叫外卖？'],
+[6,'우리 집 근처에 국숫집이 하나 있는데, 굉장히 맛있어.','我家附近有一家面馆，特别好吃。','Wǒ jiā fùjìn yǒu yì jiā miànguǎn, tèbié hǎochī.','6과 p.95 회화1','学校附近有一家面馆，特别好吃。'],
+[6,'침대 위에 고양이 한 마리가 있다.','床上有一只猫。','Chuáng shang yǒu yì zhī māo.','6과 p.99 바꿔 말하기1','学校附近有一家面馆。'],
+[6,'우리 집 뒤쪽에 산이 하나 있다.','我家后边有一座山。','Wǒ jiā hòubian yǒu yí zuò shān.','6과 p.99 바꿔 말하기1','学校附近有一家面馆。'],
+[6,'너는 더우장 마실래 아니면 커피 마실래?','你想喝豆浆还是咖啡？','Nǐ xiǎng hē dòujiāng háishi kāfēi?','6과 p.98 실력쌓기1','你想喝可乐还是咖啡？'],
+[6,'나는 닭고기 또는 소고기를 먹고 싶어.','我想吃鸡肉或者牛肉。','Wǒ xiǎng chī jīròu huòzhě niúròu.','6과 p.98 실력쌓기1 (평서문 或者)','我想喝可乐或者咖啡。'],
+[6,'나는 아직 도삭면을 먹어 본 적이 없어.','我还没吃过刀削面。','Wǒ hái méi chīguo dāoxiāomiàn.','6과 p.97 회화2','我还没吃过牛肉面。'],
+[6,'나는 그 영화를 본 적이 있다.','我看过那部电影。','Wǒ kànguo nà bù diànyǐng.','6과 p.98 실력쌓기2','我读过那部作品。'],
+[6,'그럼 도삭면 한 그릇 시켜서 맛 좀 봐.','那点一碗刀削面尝尝吧。','Nà diǎn yì wǎn dāoxiāomiàn chángchang ba.','6과 p.97 회화2','那点一碗牛肉面尝尝吧。'],
+[6,'종업원, 콜라 한 병 주세요!','服务员，来一瓶可乐！','Fúwùyuán, lái yì píng kělè!','6과 p.99 바꿔 말하기2','服务员，来一瓶水！'],
+];
+
+
+/* ===================== 병음 채점 ===================== */
+const MARK={a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù','ü':'ǖǘǚǜ'};
+function addTone(s,t){
+  if(!t||t>4) return s;
+  let i=-1;
+  if(s.includes('a')) i=s.indexOf('a');
+  else if(s.includes('e')) i=s.indexOf('e');
+  else if(s.includes('ou')) i=s.indexOf('o');
+  else { for(let k=s.length-1;k>=0;k--){ if('aeiouü'.includes(s[k])){i=k;break;} } }
+  if(i<0) return s;
+  return s.slice(0,i)+MARK[s[i]][t-1]+s.slice(i+1);
+}
+function norm(x){
+  x=x.normalize('NFC').toLowerCase().replace(/u:|v/g,'ü');
+  x=x.replace(/([a-zü]+?)([0-5])/g,(m,s,t)=>addTone(s,+t));
+  return x.replace(/[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/g,'');
+}
+function bare(x){ return norm(x).normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function grade(user,ans){
+  if(!user.trim()) return 'bad';
+  if(norm(user)===norm(ans)) return 'ok';
+  if(bare(user)===bare(ans)) return 'tone';
+  return 'bad';
+}
+
+/* ===================== 공용 퀴즈 엔진 ===================== */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function Quiz(root,opt){
+  // items: {prompt, tags[], hint, answer, show(html after reveal)}
+  const st={items:[],pos:0,checked:false,ok:0,bad:0,wrong:[],mode:'type',strict:true};
+  function start(items,mode,strict){
+    st.items=items;st.pos=0;st.ok=0;st.bad=0;st.wrong=[];st.checked=false;st.mode=mode;st.strict=strict;st.flipped=false;render();
+  }
+  function cur(){return st.items[st.pos];}
+  function render(){
+    if(!st.items.length){root.innerHTML='<div class="card"><div class="hint">선택된 항목이 없어요.</div></div>';return;}
+    if(st.pos>=st.items.length){
+      root.innerHTML=`<div class="card"><div class="done">끝! 맞음 ${st.ok} · 틀림 ${st.bad}</div>
+      ${st.wrong.length?`<div class="hint">틀린 것 ${st.wrong.length}개: ${st.wrong.map(w=>esc(w.short||w.prompt)).join(', ')}</div>`:''}
+      <div class="tbs">${st.wrong.length?'<button class="tb r" data-k="r">틀린 것만 다시</button>':''}<button class="tb" data-k="Enter">처음부터</button></div></div>`;
+      return;
+    }
+    const it=cur();
+    const tags=it.tags.map(t=>`<span class="tag ${t.c||''}">${esc(t.t)}</span>`).join('');
+    let body=`<div class="tags">${tags}</div><div class="ko">${esc(it.prompt)}</div>${it.hint?`<div class="hint">${esc(it.hint)}</div>`:''}`;
+    if(st.mode==='type'){
+      body+=`<input class="ans" id="${opt.id}-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="병음 입력 (예: xiang3 / xiǎng)">`;
+      body+=`<div class="res" id="${opt.id}-res"></div><div id="${opt.id}-show"></div>`;
+    } else {
+      body+=`<div id="${opt.id}-show"></div>`;
+    }
+    root.innerHTML=`<div class="prog">${st.pos+1} / ${st.items.length} · 맞음 ${st.ok} · 틀림 ${st.bad}</div><div class="card">${body}</div>
+    <div class="keys">${st.mode==='type'
+      ?'<kbd>Enter</kbd> 채점 → <kbd>Enter</kbd> 다음 · <kbd>Esc</kbd> 모르겠음(정답 보기)'
+      :'<kbd>Space</kbd> 정답 보기 · <kbd>→</kbd> 알았음 · <kbd>←</kbd> 몰랐음'}</div>
+    <div class="tbs">${st.mode==='type'
+      ?'<button class="tb" data-k="Escape">모르겠음</button><button class="tb g" data-k="Enter">채점 / 다음</button>'
+      :'<button class="tb r" data-k="ArrowLeft">몰랐음</button><button class="tb" data-k=" ">정답 보기</button><button class="tb g" data-k="ArrowRight">알았음</button>'}</div>`;
+    st.checked=false;st.flipped=false;
+    if(st.mode==='type'){const i=document.getElementById(opt.id+'-in');i.focus();}
+  }
+  function reveal(cls,msg){
+    const it=cur();
+    document.getElementById(opt.id+'-show').innerHTML=it.show;
+    const r=document.getElementById(opt.id+'-res');
+    if(r){r.className='res '+cls;r.textContent=msg;}
+  }
+  function check(giveUp){
+    const it=cur();const inp=document.getElementById(opt.id+'-in');
+    let g=giveUp?'bad':grade(inp.value,it.answer);
+    if(g==='tone' && !st.strict) g='ok';
+    if(g==='ok'){st.ok++;reveal('ok','정답!');}
+    else if(g==='tone'){st.bad++;st.wrong.push(it);reveal('warn','성조 틀림 ✗');}
+    else {st.bad++;st.wrong.push(it);reveal('bad',giveUp?'정답 확인':'오답 ✗');}
+    st.checked=true;inp.readOnly=true;
+  }
+  function next(){st.pos++;render();}
+  function key(e){
+    if(st.pos>=st.items.length){
+      if(e.key==='r'||e.key==='R'){e.preventDefault();if(st.wrong.length)start(shuffle(st.wrong),st.mode,st.strict);}
+      else if(e.key==='Enter'){e.preventDefault();opt.restart();}
+      return;
+    }
+    if(!st.items.length) return;
+    if(st.mode==='type'){
+      if(e.key==='Enter'){e.preventDefault();if(!st.checked)check(false);else next();}
+      else if(e.key==='Escape'){e.preventDefault();if(!st.checked)check(true);}
+    } else {
+      if(e.key===' '){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;}}
+      else if(e.key==='ArrowRight'){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;return;}st.ok++;next();}
+      else if(e.key==='ArrowLeft'){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;return;}st.bad++;st.wrong.push(cur());next();}
+    }
+  }
+  return {start,key};
+}
+
+/* ===================== 단어 학습 / 테스트 ===================== */
+function wordItems(p){
+  const us=[...document.querySelectorAll('.'+p+'-u:checked')].map(x=>+x.value);
+  const b=document.querySelector('.'+p+'-b').checked,s=document.querySelector('.'+p+'-s').checked;
+  let items=W.filter(w=>us.includes(w[0])&&((w[5]==='b'&&b)||(w[5]==='s'&&s))).map(w=>({
+    prompt:w[3],short:w[1],answer:w[2],
+    tags:[{t:w[0]+'과'},{t:w[4]},{t:w[5]==='b'?'교과서 단어':'보충',c:w[5]==='s'?'s':''}],
+    show:`<div class="py">${esc(w[2])}</div><div class="hz">${esc(w[1])}</div>`
+  }));
+  if(document.querySelector('.'+p+'-shuf').checked) items=shuffle(items);
+  return items;
+}
+const wq=Quiz(document.getElementById('wq'),{id:'w',restart:()=>startW()});
+function startW(){wq.start(wordItems('w'),'flip',true);}
+const xq=Quiz(document.getElementById('xq'),{id:'x',restart:()=>startX()});
+function startX(){xq.start(wordItems('x'),'type',document.querySelector('.x-tone').checked);}
+document.querySelectorAll('#t-w .bar input').forEach(el=>el.addEventListener('change',startW));
+document.querySelectorAll('#t-x .bar input').forEach(el=>el.addEventListener('change',startX));
+
+/* ===================== 단위 탭 ===================== */
+document.getElementById('utable').innerHTML=`
+<div class="box"><p><b>개수 확인:</b> 교과서 단어표에 <b>[단위]</b>라고 표시된 건 12개 (瓶 件 双 支 台 条 斤 家 碗 部 只 座). 여기에 뜻 표시 없이 본문에 나온 <b>个</b> (这个牛奶, 一个学生)를 더하면 13개. 돈 단위 块/元은 4과 Tip에만 있어서 아래에 따로 적음.</p>
+<p><b>공식: 수사/这·那 + 단위 + 명사</b> — 一<b>瓶</b>牛奶, 这<b>双</b>鞋, 那<b>部</b>作品. 숫자 2는 二가 아니라 <b>两 liǎng</b> (两条裙子).</p>
+<p><b>一의 성조:</b> 뒤가 4성이거나 个면 <b>yí</b> (yí jiàn, yí bù, yí zuò, yí ge), 나머지는 <b>yì</b> (yì píng, yì shuāng, yì zhī, yì tái, yì tiáo, yì jīn, yì jiā, yì wǎn).</p>
+<p><b>헷갈림 주의:</b> 옷 한 벌 = 件, 치마 한 벌 = 条 · 펜 = 支 zhī, 동물 = 只 zhī (발음 같고 한자 다름) · 家 jiā는 가게 단위이면서 '집'이라는 뜻도 있음</p></div>
+<table><tr><th>단위</th><th>병음</th><th>뜻</th><th>무엇을 셀 때</th><th>교과서 예</th><th>위치</th></tr>
+${U.map(u=>`<tr><td class="big">${u[0]}</td><td class="p">${u[1]}</td><td>${u[2]}</td><td>${u[3]}</td><td>${esc(u[4])}</td><td>${u[5]}</td></tr>`).join('')}
+</table>
+<div class="box"><p><b>돈 단위 (참고):</b> 块 kuài = 말할 때, 元 yuán = 글로 쓸 때 (4과 p.67 Tip) — 一共一百八十块 yígòng yìbǎi bāshí kuài</p></div>`;
+const uq=Quiz(document.getElementById('uq'),{id:'u',restart:()=>startU()});
+function startU(){
+  uq.start(shuffle(UQ).map(q=>({prompt:q[0],short:q[0],answer:q[1],hint:'→ 단위는?',tags:[{t:'교과서 '+q[4],c:'s'}],
+    show:`<div class="py">${esc(q[1])}</div><div class="hz">${esc(q[2])}</div><div class="hint">${esc(q[3])}</div>`})),'flip',true);
+}
+document.getElementById('umode').onchange=e=>{
+  const q=e.target.value==='quiz';
+  document.getElementById('utable').classList.toggle('hide',q);
+  document.getElementById('uq').classList.toggle('hide',!q);
+  if(q) startU();
+};
+
+/* ===================== 문장 테스트 ===================== */
+// 한국어 문장 보고 몇 과에서 찾을지 2/4/6 키로 답함
+let sItems=[],sPos=0,sAns=null,sOk=0,sWrong=[];
+function startS(list){sItems=shuffle(list||S);sPos=0;sAns=null;sOk=0;sWrong=[];renderS();}
+function renderS(){
+  const el=document.getElementById('sq');
+  if(sPos>=sItems.length){
+    el.innerHTML=`<div class="card"><div class="done">끝! ${sItems.length}개 중 ${sOk}개 맞음</div>
+    ${sWrong.length?`<div class="hint">틀린 것: ${sWrong.map(s=>esc(s[1])).join(' / ')}</div>`:''}
+    <div class="tbs">${sWrong.length?'<button class="tb r" data-k="r">틀린 것만 다시</button>':''}<button class="tb" data-k="Enter">처음부터</button></div></div>`;return;
+  }
+  const s=sItems[sPos];
+  let res='';
+  if(sAns!==null){
+    const ok=sAns===s[0];
+    res=`<div class="res ${ok?'ok':'bad'}">${ok?'정답!':'오답 ✗ → '+s[0]+'과'}</div>
+    <div class="tags"><span class="tag s">교과서 찾을 곳: ${esc(s[4])}</span></div>
+    <div class="hz">${esc(s[2])}</div><div class="py sm">${esc(s[3])}</div>
+    <div class="orig">교과서 원문: ${esc(s[5])}</div>`;
+  }
+  el.innerHTML=`<div class="prog">${sPos+1} / ${sItems.length} · 맞음 ${sOk}</div><div class="card">
+  <div class="ko sm">${esc(s[1])}</div>
+  ${sAns===null?'<div class="hint">몇 과에서 찾을까? → <kbd>2</kbd> <kbd>4</kbd> <kbd>6</kbd></div>':res}
+  </div><div class="keys"><kbd>2</kbd> <kbd>4</kbd> <kbd>6</kbd> 답하기 · <kbd>Space</kbd>/<kbd>Enter</kbd>/<kbd>→</kbd> 다음</div>
+  <div class="tbs">${sAns===null?'<button class="tb" data-k="2">2과</button><button class="tb" data-k="4">4과</button><button class="tb" data-k="6">6과</button>':'<button class="tb g" data-k="Enter">다음</button>'}</div>`;
+}
+function renderSL(){
+  let html='',last=0;
+  S.forEach(s=>{
+    if(s[0]!==last){html+=`<h3>${s[0]}과</h3>`;last=s[0];}
+    html+=`<div class="row"><div><b>${esc(s[1])}</b> <span class="tag s">${esc(s[4])}</span></div>
+    <div class="a"><div style="font-size:19px">${esc(s[2])}</div><div style="color:var(--acc);font-weight:700">${esc(s[3])}</div><div class="hint">원문: ${esc(s[5])}</div></div></div>`;
+  });
+  document.getElementById('slist').innerHTML=html;
+}
+document.getElementById('smode').onchange=e=>{
+  const l=e.target.value==='list';
+  document.getElementById('sq').classList.toggle('hide',l);
+  document.getElementById('slist').classList.toggle('hide',!l);
+  document.getElementById('sansl').classList.toggle('hide',!l);
+};
+document.getElementById('sans').onchange=e=>document.getElementById('slist').classList.toggle('show',e.target.checked);
+function keyS(e){
+  if(document.getElementById('smode').value!=='card') return;
+  if(sPos>=sItems.length){
+    if((e.key==='r'||e.key==='R')&&sWrong.length){e.preventDefault();startS(sWrong);}
+    else if(e.key==='Enter'){e.preventDefault();startS();}
+    return;
+  }
+  const s=sItems[sPos];
+  if(sAns===null && ['2','4','6'].includes(e.key)){
+    e.preventDefault();sAns=+e.key;if(sAns===s[0])sOk++;else sWrong.push(s);renderS();
+  } else if(sAns!==null && [' ','Enter','ArrowRight'].includes(e.key)){
+    e.preventDefault();sPos++;sAns=null;renderS();
+  }
+}
+
+
+/* ===================== 어순 탭 ===================== */
+document.getElementById('t-o').innerHTML=`
+<h2>중국어 기본 어순</h2>
+<div class="box"><span class="formula">주어 + (시간) + (부사) + (조동사) + 동사 + (수사+단위) + 목적어</span>
+<p class="ex"><span class="zh">明年 我 要 去 中国 旅游。</span> <span class="pp">Míngnián wǒ yào qù Zhōngguó lǚyóu.</span> (4과 p.68)</p>
+<p class="ex"><span class="zh">我 要 买 一瓶 牛奶。</span> <span class="pp">Wǒ yào mǎi yì píng niúnǎi.</span> (4과)</p>
+<p>· 한국어는 "우유를 사다"(목적어→동사)지만 중국어는 <b>동사 → 목적어</b> (买牛奶). 이게 제일 중요.</p>
+<p>· 시간(明年, 现在, 周末)은 주어 앞 또는 바로 뒤. 동사 뒤로 가면 안 됨.</p></div>
+
+<h3>1. 부사·조동사는 동사 앞</h3>
+<div class="box">
+<p>부사: 就 jiù · 也 yě · 还 hái · 先 xiān · 再 zài · 一起 yìqǐ · 特别 tèbié · 更 gèng · 快 kuài · 很 hěn</p>
+<p>조동사: 想 xiǎng(싶다) · 要 yào(하려고 한다) · 能 néng · 可以 kěyǐ · 会 huì(할 것이다)</p>
+<p class="ex"><span class="zh">我们 先 一起 结账 吧。</span> <span class="pp">Wǒmen xiān yìqǐ jiézhàng ba.</span> (4과 p.67) — 부사가 여러 개면 先 → 一起 순</p>
+<p class="ex"><span class="zh">你的高中生活 会 更 精彩！</span> (2과 p.39)</p>
+<p class="ex"><span class="zh">那 再 来 一碗 刀削面 吧。</span> (6과 p.97)</p></div>
+
+<h3>2. 수량 표현: 수사 + 단위 + 명사</h3>
+<div class="box"><p class="ex"><span class="zh">一碗牛肉面 / 两条裙子 / 这支笔 / 那部作品</span></p>
+<p>这·那 뒤에도 단위가 붙음: 这<b>个</b>牛奶, 这<b>双</b>鞋 · 숫자 2는 <b>两</b></p></div>
+
+<h3>3. 的 수식: 꾸미는 말 + 的 + 명사</h3>
+<div class="box"><p class="ex"><span class="zh">红色的衣服 · 你的高中生活 · 我的梦想</span></p>
+<p>수량까지 있으면: 一件 + 红色的 + 衣服 (수량 → 的 수식 → 명사)</p></div>
+
+<h3>4. 연동문: 주어 + 동사(구)1 + 동사(구)2 — 2과 p.40 실력쌓기1</h3>
+<div class="box"><p>동사가 두 개 이상이면 <b>동작이 일어나는 순서대로</b> 늘어놓음 (가서 → 하다).</p>
+<p class="ex"><span class="zh">周末我们 去 看电影 吧。</span> <span class="pp">Zhōumò wǒmen qù kàn diànyǐng ba.</span> 주말에 우리 영화 보러 가자.</p>
+<p class="ex"><span class="zh">他 来韩国 参加足球比赛。</span> <span class="pp">Tā lái Hánguó cānjiā zúqiú bǐsài.</span> 그는 축구 경기에 참가하러 한국에 왔다.</p>
+<p>한국어는 "경기에 참가하러 한국에 왔다"(목적 먼저)지만 중국어는 <b>来韩国 → 参加比赛</b> (먼저 오고 그다음 참가).</p>
+<p class="ex"><span class="zh">我们去报名吧。 · 就快来报名。 · 就来找我。 · 出去拍照 · 出去吃面</span></p></div>
+
+<h3>5. 존재문: 장소 + 有 + 수량 + 명사</h3>
+<div class="box"><p class="ex"><span class="zh">学校附近 有 一家面馆。</span> <span class="pp">Xuéxiào fùjìn yǒu yì jiā miànguǎn.</span> (6과 p.95)</p>
+<p class="ex"><span class="zh">床上有一只猫。 · 教室里有一个学生。 · 我家后边有一座山。</span> (6과 p.99)</p>
+<p>장소 = 명사 + 방위사(上 위 / 里 안 / 后边 뒤쪽 / 附近 근처). 한국어처럼 "침대 위에"인데 <b>上이 명사 뒤</b>.</p></div>
+
+<h3>6. 只要 A，就 B (A하기만 하면 B한다) — 2과</h3>
+<div class="box"><p class="ex"><span class="zh">只要 喜欢音乐，就 快来报名。</span> (p.39)</p>
+<p class="ex"><span class="zh">只要 你愿意，就 可以去。</span> (p.40) — 就는 뒷절 <b>동사(조동사) 앞</b>, 주어가 있으면 주어 뒤</p></div>
+
+<h3>7. 동사 + 一下 (좀 ~하다) — 4과</h3>
+<div class="box"><p class="ex"><span class="zh">我 扫 一下 二维码。</span> — 동사 + 一下 + 목적어 (목적어가 一下 뒤!)</p>
+<p class="ex"><span class="zh">我能 用 一下 这支笔 吗？</span> (p.68)</p></div>
+
+<h3>8. 경험 过 — 6과</h3>
+<div class="box"><p><span class="formula">동사 + 过 + 목적어</span> &nbsp; 부정: <span class="formula">没 + 동사 + 过</span></p>
+<p class="ex"><span class="zh">我 包过 饺子。 · 我 没 看过 京剧。 · 我 还 没 吃过 牛肉面。</span></p>
+<p>부정은 不 말고 <b>没(有)</b>. 还(아직)는 没 앞.</p></div>
+
+<h3>9. 완료 了 — 4과</h3>
+<div class="box"><p class="ex"><span class="zh">我们 带了 环保袋。</span> — 동사 바로 뒤에 了</p>
+<p>太 + 형용사 + 了 = 너무 ~하다: <span class="zh">太饿了！</span> (6과)</p></div>
+
+<h3>10. 선택: 还是 vs 或者 — 6과</h3>
+<div class="box"><p>의문문 → <b>还是</b>: <span class="zh">你想喝可乐 还是 咖啡？</span> (끝에 吗 안 붙임!)</p>
+<p>평서문 → <b>或者</b>: <span class="zh">我想喝可乐 或者 咖啡。</span></p></div>
+
+<h3>11. 문장 끝 조사</h3>
+<div class="box"><p>吧 ba 제안 (~하자): 我们去报名吧。 · 吗 ma 의문: 需要塑料袋吗？ · 呢 ne 되묻기: 你呢？ · 啊 a 부드러운 말투: 好啊</p>
+<p>의문사(什么, 多少, 怎么, 怎么样) 있으면 吗 안 붙임: 你要买什么？ / 您怎么付？</p></div>
+
+<h3>12. 동사 중첩 / 부정 / 날짜</h3>
+<div class="box"><p>동사 중첩 = 가볍게 해 보기: 尝尝 chángchang (6과 p.97 Tip)</p>
+<p>하고 싶지 않다 = <b>不想</b> + 동사: 我不想穿这双鞋。(4과 p.68)</p>
+<p>날짜: 큰 단위 → 작은 단위 (月 → 日): 从九月二十日到九月二十八日 (2과 p.39)</p></div>`;
+
+/* ===================== 탭 / 키 ===================== */
+let tab='w';
+const TABS=['w','x','u','s','o'];
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  tab=b.dataset.t;
+  document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));
+  TABS.forEach(t=>document.getElementById('t-'+t).classList.toggle('hide',t!==tab));
+  b.blur();
+  if(tab==='x'){const i=document.getElementById('x-in');if(i)i.focus();}
+});
+function dispatch(e){
+  if(tab==='w') wq.key(e);
+  else if(tab==='x') xq.key(e);
+  else if(tab==='u'&&document.getElementById('umode').value==='quiz') uq.key(e);
+  else if(tab==='s') keyS(e);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-k]'); if(!b) return;
+  dispatch({key:b.dataset.k,target:document.body,preventDefault(){}});
+});
+document.addEventListener('keydown',e=>{
+  if(e.isComposing) return;
+  const t=e.target;
+  if(t.closest&&t.closest('.bar')&&(e.key===' '||e.key==='Enter')) t.blur();
+  if(t.classList&&t.classList.contains('tb')&&(e.key===' '||e.key==='Enter')){e.preventDefault();}
+  if(tab==='w') wq.key(e);
+  else if(tab==='x') xq.key(e);
+  else if(tab==='u'&&document.getElementById('umode').value==='quiz') uq.key(e);
+  else if(tab==='s') keyS(e);
+});
+startW();startX();startS();renderSL();
+</script>
+</body>
+</html>
