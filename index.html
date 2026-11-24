@@ -52,6 +52,11 @@ h3{font-size:17px;margin:18px 0 6px}
 .formula{font-size:17px;font-weight:700;background:var(--tag);padding:8px 12px;border-radius:10px;display:inline-block}
 .hide{display:none!important}
 .done{font-size:22px;font-weight:700}
+.fl{display:inline-block;background:var(--acc);color:var(--bg);border-radius:12px;padding:0 14px;margin-right:12px;font-size:.9em}
+.dl h3{font-size:28px;color:var(--acc);margin:18px 0 4px}
+.dl .r{display:flex;gap:12px;padding:6px 4px;border-bottom:1px solid var(--line);font-size:16px}
+.dl .r .a{color:var(--acc);font-weight:700;min-width:150px}
+.dl .r .h{min-width:80px;font-size:19px}
 .tbs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 .tb{font:inherit;font-size:18px;font-weight:700;padding:14px 22px;min-width:110px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;touch-action:manipulation}
 .tb.g{background:var(--ok);color:#fff;border-color:var(--ok)}.tb.r{background:var(--bad);color:#fff;border-color:var(--bad)}
@@ -67,6 +72,7 @@ h3{font-size:17px;margin:18px 0 6px}
   <button data-t="u">③ 단위(양사) 13개</button>
   <button data-t="s">④ 문장 테스트</button>
   <button data-t="o">⑤ 중국어 어순</button>
+  <button data-t="d">⑥ 사전(ABC) 목록</button>
 </nav>
 
 <!-- 단어 학습 -->
@@ -79,6 +85,7 @@ h3{font-size:17px;margin:18px 0 6px}
     <span>|</span>
     <label><input type="checkbox" class="w-b" checked>교과서 단어</label>
     <label><input type="checkbox" class="w-s" checked>보충(뜻 표시 없지만 중요)</label>
+    <select class="w-ord"><option value="book">교과서 순</option><option value="abc">사전(ABC) 순</option></select>
     <label><input type="checkbox" class="w-shuf">섞기</label>
   </div>
   <div id="wq"></div>
@@ -94,7 +101,7 @@ h3{font-size:17px;margin:18px 0 6px}
     <span>|</span>
     <label><input type="checkbox" class="x-b" checked>교과서 단어</label>
     <label><input type="checkbox" class="x-s" checked>보충</label>
-    <label><input type="checkbox" class="x-tone" checked>성조까지 채점</label>
+    <select class="x-tone"><option value="first">대충: 앞글자만 맞으면 정답</option><option value="bare">성조 빼고 전부</option><option value="tone">성조까지 정확히</option></select>
     <label><input type="checkbox" class="x-shuf" checked>섞기</label>
   </div>
   <div id="xq"></div>
@@ -121,6 +128,7 @@ h3{font-size:17px;margin:18px 0 6px}
 
 <!-- 어순 -->
 <section id="t-o" class="hide"></section>
+<section id="t-d" class="hide"></section>
 </div>
 
 <script>
@@ -293,6 +301,16 @@ function norm(x){
   return x.replace(/[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/g,'');
 }
 function bare(x){ return norm(x).normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function first(p){return bare(p).charAt(0).toUpperCase();}
+function pyShow(p){return `<div class="py"><span class="fl" title="사전에서 찾을 알파벳">${first(p)}</span>${esc(p)}</div>`;}
+function gradeLv(user,ans,lv){
+  const u=bare(user);
+  if(!u) return 'bad';
+  if(lv==='first') return bare(ans).startsWith(u)?'ok':'bad';
+  const g=grade(user,ans);
+  if(g==='tone'&&lv==='bare') return 'ok';
+  return g;
+}
 function grade(user,ans){
   if(!user.trim()) return 'bad';
   if(norm(user)===norm(ans)) return 'ok';
@@ -381,8 +399,7 @@ function Quiz(root,opt){
   }
   function check(giveUp){
     const it=cur();const inp=document.getElementById(opt.id+'-in');
-    let g=giveUp?'bad':grade(inp.value,it.answer);
-    if(g==='tone' && !st.strict) g='ok';
+    let g=giveUp?'bad':gradeLv(inp.value,it.answer,st.strict);
     if(g==='ok'){st.ok++;reveal('ok','정답!');}
     else if(g==='tone'){st.bad++;st.wrong.push(it);reveal('warn','성조 틀림 ✗');}
     else {st.bad++;st.wrong.push(it);reveal('bad',giveUp?'정답 확인':'오답 ✗');}
@@ -424,17 +441,27 @@ function wordItems(p){
   let items=W.filter(w=>us.includes(w[0])&&((w[5]==='b'&&b)||(w[5]==='s'&&s))).map(w=>({
     prompt:w[3],short:w[1],answer:w[2],
     tags:[{t:w[0]+'과'},{t:w[4]},{t:w[5]==='b'?'교과서 단어':'보충',c:w[5]==='s'?'s':''}],
-    show:`<div class="py">${esc(w[2])}</div><div class="hz">${esc(w[1])}</div>`
+    show:`${pyShow(w[2])}<div class="hz">${esc(w[1])}</div>`
   }));
+  const ord=document.querySelector('.'+p+'-ord');
+  if(ord&&ord.value==='abc') items.sort((a,b)=>bare(a.answer).localeCompare(bare(b.answer)));
   if(document.querySelector('.'+p+'-shuf').checked) items=shuffle(items);
   return items;
 }
 const wq=Quiz(document.getElementById('wq'),{id:'w',restart:()=>startW()});
 function startW(){wq.start(wordItems('w'),'flip',true);}
 const xq=Quiz(document.getElementById('xq'),{id:'x',restart:()=>startX()});
-function startX(){xq.start(wordItems('x'),'type',document.querySelector('.x-tone').checked);}
-document.querySelectorAll('#t-w .bar input').forEach(el=>el.addEventListener('change',startW));
-document.querySelectorAll('#t-x .bar input').forEach(el=>el.addEventListener('change',startX));
+function startX(){xq.start(wordItems('x'),'type',document.querySelector('.x-tone').value);}
+/* ===================== 사전(ABC) 목록 ===================== */
+(function(){
+  const rows=W.slice().sort((a,b)=>bare(a[2]).localeCompare(bare(b[2])));
+  let html='<div class="box"><p>교과서 뒤 단어 목록처럼 병음 알파벳 순서로 정리. 빨간 큰 글자 = 찾아갈 알파벳.</p></div><div class="dl">',last='';
+  rows.forEach(w=>{const f=first(w[2]);if(f!==last){html+=`<h3>${f}</h3>`;last=f;}
+    html+=`<div class="r"><span class="a">${esc(w[2])}</span><span class="h">${esc(w[1])}</span><span>${esc(w[3])}</span><span class="tag">${w[0]}과</span></div>`;});
+  document.getElementById('t-d').innerHTML=html+'</div>';
+})();
+document.querySelectorAll('#t-w .bar input, #t-w .bar select').forEach(el=>el.addEventListener('change',startW));
+document.querySelectorAll('#t-x .bar input, #t-x .bar select').forEach(el=>el.addEventListener('change',startX));
 
 /* ===================== 단위 탭 ===================== */
 document.getElementById('utable').innerHTML=`
@@ -585,7 +612,7 @@ document.getElementById('t-o').innerHTML=`
 
 /* ===================== 탭 / 키 ===================== */
 let tab='w';
-const TABS=['w','x','u','s','o'];
+const TABS=['w','x','u','s','o','d'];
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
   tab=b.dataset.t;
   document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));
