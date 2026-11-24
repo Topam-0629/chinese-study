@@ -362,10 +362,10 @@ function Quiz(root,opt){
     root.innerHTML=`<div class="prog">${prog}</div><div class="card" id="${opt.id}-card">${body}</div>
     <div class="keys">${st.mode==='type'
       ?'<kbd>Enter</kbd> 채점 → <kbd>Enter</kbd> 다음 · <kbd>Esc</kbd> 모르겠음(정답 보기)'
-      :'카드 탭 = 정답 보기 · 👉 오른쪽으로 밀기 = 안다 · 👈 왼쪽으로 밀기 = 모른다 (키보드: <kbd>Space</kbd> <kbd>→</kbd> <kbd>←</kbd>)'}</div>
+      :'카드 탭 = 정답 보기/숨기기 · 👉 오른쪽으로 밀기 = 안다 · 👈 왼쪽으로 밀기 = 모른다 (키보드: <kbd>Space</kbd> <kbd>→</kbd> <kbd>←</kbd>)'}</div>
     <div class="tbs">${st.mode==='type'
       ?'<button class="tb" data-k="Escape">모르겠음</button><button class="tb g" data-k="Enter">채점 / 다음</button>'
-      :'<button class="tb r" data-k="ArrowLeft">← 모른다</button><button class="tb" data-k=" ">정답 보기</button><button class="tb g" data-k="ArrowRight">안다 →</button>'}</div>`;
+      :'<button class="tb r" data-k="ArrowLeft">← 모른다</button><button class="tb" data-k=" ">정답 보기/숨김</button><button class="tb g" data-k="ArrowRight">안다 →</button>'}</div>`;
     st.checked=false;st.flipped=false;
     if(st.mode==='type'){const i=document.getElementById(opt.id+'-in');i.focus();}
     else swipe(document.getElementById(opt.id+'-card'));
@@ -377,16 +377,16 @@ function Quiz(root,opt){
       if(x0===null) return;
       dx=e.touches[0].clientX-x0;const dy=e.touches[0].clientY-y0;
       if(Math.abs(dx)>Math.abs(dy)){e.preventDefault();card.style.transform=`translateX(${dx}px) rotate(${dx/25}deg)`;
-        card.style.boxShadow=dx>40?'0 0 0 4px var(--ok)':dx<-40?'0 0 0 4px var(--bad)':'';}
+        card.style.boxShadow=dx>30?'0 0 0 4px var(--ok)':dx<-30?'0 0 0 4px var(--bad)':'';}
     },{passive:false});
     card.addEventListener('touchend',()=>{
       if(x0===null) return; x0=null;
       card.style.transition='transform .15s';
-      if(dx>70||dx<-70){
+      if(dx>30||dx<-30){
         card.style.transform=`translateX(${dx>0?600:-600}px) rotate(${dx>0?20:-20}deg)`;
         const k=dx>0?'ArrowRight':'ArrowLeft';
         setTimeout(()=>key({key:k,preventDefault(){}}),130);
-      } else if(Math.abs(dx)<10){
+      } else if(Math.abs(dx)<8){
         card.style.transform='';card.style.boxShadow='';key({key:' ',preventDefault(){}});
       } else {card.style.transform='';card.style.boxShadow='';}
     });
@@ -426,7 +426,7 @@ function Quiz(root,opt){
       if(e.key==='Enter'){e.preventDefault();if(!st.checked)check(false);else next();}
       else if(e.key==='Escape'){e.preventDefault();if(!st.checked)check(true);}
     } else {
-      if(e.key===' '){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;}}
+      if(e.key===' '){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;}else{document.getElementById(opt.id+'-show').innerHTML='';st.flipped=false;}}
       else if(e.key==='ArrowRight'){e.preventDefault();st.ok++;next();}
       else if(e.key==='ArrowLeft'){e.preventDefault();st.bad++;st.wrong.push(cur());next();}
     }
