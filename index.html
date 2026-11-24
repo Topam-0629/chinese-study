@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>중국어 2·4·6과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
-:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1f;--sub:#6b6b70;--line:#e3e1dc;--acc:#c8372d;--ok:#1f8a4c;--warn:#c27c0e;--bad:#c8372d;--tag:#efece6}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17171a;--card:#222226;--ink:#f1f1f3;--sub:#a0a0a8;--line:#36363c;--acc:#ff6b5e;--ok:#4cc27e;--warn:#e7a73a;--bad:#ff6b5e;--tag:#2d2d33}}
-:root[data-theme="dark"]{--bg:#17171a;--card:#222226;--ink:#f1f1f3;--sub:#a0a0a8;--line:#36363c;--acc:#ff6b5e;--ok:#4cc27e;--warn:#e7a73a;--bad:#ff6b5e;--tag:#2d2d33}
+@font-face{font-family:"Gmarket Sans";font-weight:300;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff) format("woff");font-display:swap}
+@font-face{font-family:"Gmarket Sans";font-weight:500;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff) format("woff");font-display:swap}
+@font-face{font-family:"Gmarket Sans";font-weight:700;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff) format("woff");font-display:swap}
+:root{--bg:#060807;--card:#0c110f;--card2:#111814;--ink:#e9f5ee;--sub:#7d9488;--line:#1f2c25;--line2:#2a3a31;--acc:#1cf28a;--acc2:#0fbf6a;--accink:#02160b;--glow:rgba(28,242,138,.28);--ok:#1cf28a;--warn:#ffd34a;--bad:#ff5468;--tag:#16201b;--f-disp:"Gmarket Sans","Noto Sans KR",system-ui,sans-serif;--f-zh:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","PingFang SC",sans-serif;line-height:1.5}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gmarket Sans","Noto Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;font-weight:500;line-height:1.5}
 .wrap{max-width:980px;margin:0 auto;padding:16px}
 nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font-size:15px;cursor:pointer}
@@ -62,6 +65,31 @@ h3{font-size:17px;margin:18px 0 6px}
 .tb.g{background:var(--ok);color:#fff;border-color:var(--ok)}.tb.r{background:var(--bad);color:#fff;border-color:var(--bad)}
 .tb:active{transform:scale(.97)}
 @media (max-width:600px){.ko{font-size:26px}.py{font-size:38px}.card{padding:20px 14px}}
+
+html{color-scheme:dark}
+body{background:var(--bg)}
+.ko,.done,h2,h3,.py,.hz,.zh,.tb,nav button,th{font-family:var(--f-disp)}
+.hz,.zh,td.big,.ex .zh,.dl .r .h,.ko .zh{font-family:var(--f-zh);font-weight:700}
+.py{font-weight:700;text-shadow:0 0 22px var(--glow)}
+.card{background:var(--card);border:1px solid var(--line2);border-radius:4px;box-shadow:0 0 0 1px #000,0 10px 40px rgba(0,0,0,.5)}
+.box,.list .row,table{background:var(--card);border-radius:4px;border:1px solid var(--line)}
+th{background:var(--card2);color:var(--acc)}
+nav button{border-radius:0;transform:skewX(-14deg);border:1px solid var(--line2);background:transparent;color:var(--sub);padding:9px 16px}
+nav button.on{background:var(--acc);color:var(--accink);border-color:var(--acc);box-shadow:0 0 18px var(--glow)}
+.tag{border-radius:0;transform:skewX(-14deg);background:var(--tag);color:var(--sub)}
+.tag.s{background:var(--warn);color:#241a00}
+.fl{border-radius:0;transform:skewX(-14deg);background:var(--acc);color:var(--accink);box-shadow:0 0 18px var(--glow)}
+.tb{border-radius:0;background:transparent;border:1px solid var(--line2);color:var(--ink)}
+.tb.g{background:var(--acc);color:var(--accink);border-color:var(--acc);box-shadow:0 0 14px var(--glow)}
+.tb.r{background:transparent;color:var(--bad);border-color:var(--bad)}
+.bar select,.bar button,input.ans{background:var(--card);color:var(--ink);border-color:var(--line2);border-radius:2px}
+input.ans:focus{border-color:var(--acc)}
+.res.ok{color:var(--ok)}.res.bad{color:var(--bad)}.res.warn{color:var(--warn)}
+.formula{background:var(--card2);border-left:4px solid var(--acc);border-radius:0;color:var(--acc)}
+.done{font-size:26px}
+h2,h3{color:var(--acc)}
+kbd{border-color:var(--line2);background:var(--card2);color:var(--sub)}
+.dl h3{text-shadow:0 0 18px var(--glow)}
 </style>
 </head>
 <body>
