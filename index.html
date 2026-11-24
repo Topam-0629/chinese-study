@@ -17,7 +17,7 @@ nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;font-size:14px;color:var(--sub);margin-bottom:12px}
 .bar label{display:inline-flex;gap:4px;align-items:center;cursor:pointer}
 .bar select,.bar button{font:inherit;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.card{touch-action:pan-y;user-select:none;-webkit-user-select:none;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .tag{background:var(--tag);color:var(--sub);font-size:12px;padding:2px 8px;border-radius:6px}
 .tag.s{color:var(--warn)}
@@ -306,14 +306,24 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 
 function Quiz(root,opt){
   // items: {prompt, tags[], hint, answer, show(html after reveal)}
-  const st={items:[],pos:0,checked:false,ok:0,bad:0,wrong:[],mode:'type',strict:true};
+  // 넘기기 모드: 한 바퀴 끝나면 모르는 것만 다시 → 0개 되면 1사이클 완료 → 다음 사이클은 전체부터
+  const st={items:[],full:[],pos:0,checked:false,ok:0,bad:0,wrong:[],mode:'type',strict:true,cycle:1,round:1};
   function start(items,mode,strict){
-    st.items=items;st.pos=0;st.ok=0;st.bad=0;st.wrong=[];st.checked=false;st.mode=mode;st.strict=strict;st.flipped=false;render();
+    st.full=items;st.cycle=1;st.mode=mode;st.strict=strict;startRound(items,1);
+  }
+  function startRound(items,round){
+    st.items=items;st.round=round;st.pos=0;st.ok=0;st.bad=0;st.wrong=[];st.checked=false;st.flipped=false;render();
   }
   function cur(){return st.items[st.pos];}
   function render(){
     if(!st.items.length){root.innerHTML='<div class="card"><div class="hint">선택된 항목이 없어요.</div></div>';return;}
     if(st.pos>=st.items.length){
+      if(st.mode==='flip'){
+        root.innerHTML=`<div class="card"><div class="done">🎉 ${st.cycle}사이클 끝!</div>
+        <div class="hint">${st.full.length}개 전부 '안다'까지 ${st.round}바퀴 걸렸어요.</div>
+        <div class="tbs"><button class="tb g" data-k="Enter">${st.cycle+1}사이클 시작 (처음부터)</button></div></div>`;
+        return;
+      }
       root.innerHTML=`<div class="card"><div class="done">끝! 맞음 ${st.ok} · 틀림 ${st.bad}</div>
       ${st.wrong.length?`<div class="hint">틀린 것 ${st.wrong.length}개: ${st.wrong.map(w=>esc(w.short||w.prompt)).join(', ')}</div>`:''}
       <div class="tbs">${st.wrong.length?'<button class="tb r" data-k="r">틀린 것만 다시</button>':''}<button class="tb" data-k="Enter">처음부터</button></div></div>`;
@@ -328,15 +338,40 @@ function Quiz(root,opt){
     } else {
       body+=`<div id="${opt.id}-show"></div>`;
     }
-    root.innerHTML=`<div class="prog">${st.pos+1} / ${st.items.length} · 맞음 ${st.ok} · 틀림 ${st.bad}</div><div class="card">${body}</div>
+    const prog=st.mode==='flip'
+      ?`<b>${st.cycle}사이클 · ${st.round}바퀴째</b> · ${st.pos+1} / ${st.items.length} · 안다 ${st.ok} · 모른다 ${st.bad}`
+      :`${st.pos+1} / ${st.items.length} · 맞음 ${st.ok} · 틀림 ${st.bad}`;
+    root.innerHTML=`<div class="prog">${prog}</div><div class="card" id="${opt.id}-card">${body}</div>
     <div class="keys">${st.mode==='type'
       ?'<kbd>Enter</kbd> 채점 → <kbd>Enter</kbd> 다음 · <kbd>Esc</kbd> 모르겠음(정답 보기)'
-      :'<kbd>Space</kbd> 정답 보기 · <kbd>→</kbd> 알았음 · <kbd>←</kbd> 몰랐음'}</div>
+      :'카드 탭 = 정답 보기 · 👉 오른쪽으로 밀기 = 안다 · 👈 왼쪽으로 밀기 = 모른다 (키보드: <kbd>Space</kbd> <kbd>→</kbd> <kbd>←</kbd>)'}</div>
     <div class="tbs">${st.mode==='type'
       ?'<button class="tb" data-k="Escape">모르겠음</button><button class="tb g" data-k="Enter">채점 / 다음</button>'
-      :'<button class="tb r" data-k="ArrowLeft">몰랐음</button><button class="tb" data-k=" ">정답 보기</button><button class="tb g" data-k="ArrowRight">알았음</button>'}</div>`;
+      :'<button class="tb r" data-k="ArrowLeft">← 모른다</button><button class="tb" data-k=" ">정답 보기</button><button class="tb g" data-k="ArrowRight">안다 →</button>'}</div>`;
     st.checked=false;st.flipped=false;
     if(st.mode==='type'){const i=document.getElementById(opt.id+'-in');i.focus();}
+    else swipe(document.getElementById(opt.id+'-card'));
+  }
+  function swipe(card){
+    let x0=null,y0=0,dx=0;
+    card.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;card.style.transition='none';},{passive:true});
+    card.addEventListener('touchmove',e=>{
+      if(x0===null) return;
+      dx=e.touches[0].clientX-x0;const dy=e.touches[0].clientY-y0;
+      if(Math.abs(dx)>Math.abs(dy)){e.preventDefault();card.style.transform=`translateX(${dx}px) rotate(${dx/25}deg)`;
+        card.style.boxShadow=dx>40?'0 0 0 4px var(--ok)':dx<-40?'0 0 0 4px var(--bad)':'';}
+    },{passive:false});
+    card.addEventListener('touchend',()=>{
+      if(x0===null) return; x0=null;
+      card.style.transition='transform .15s';
+      if(dx>70||dx<-70){
+        card.style.transform=`translateX(${dx>0?600:-600}px) rotate(${dx>0?20:-20}deg)`;
+        const k=dx>0?'ArrowRight':'ArrowLeft';
+        setTimeout(()=>key({key:k,preventDefault(){}}),130);
+      } else if(Math.abs(dx)<10){
+        card.style.transform='';card.style.boxShadow='';key({key:' ',preventDefault(){}});
+      } else {card.style.transform='';card.style.boxShadow='';}
+    });
   }
   function reveal(cls,msg){
     const it=cur();
@@ -353,10 +388,19 @@ function Quiz(root,opt){
     else {st.bad++;st.wrong.push(it);reveal('bad',giveUp?'정답 확인':'오답 ✗');}
     st.checked=true;inp.readOnly=true;
   }
-  function next(){st.pos++;render();}
+  function next(){
+    st.pos++;
+    // 넘기기 모드: 바퀴 끝 + 모르는 것 남음 → 바로 모르는 것만 다음 바퀴
+    if(st.mode==='flip'&&st.pos>=st.items.length&&st.wrong.length){startRound(st.wrong,st.round+1);return;}
+    render();
+  }
   function key(e){
     if(st.pos>=st.items.length){
-      if(e.key==='r'||e.key==='R'){e.preventDefault();if(st.wrong.length)start(shuffle(st.wrong),st.mode,st.strict);}
+      if(st.mode==='flip'){
+        if(['Enter',' ','ArrowRight'].includes(e.key)){e.preventDefault();st.cycle++;startRound(st.full,1);}
+        return;
+      }
+      if(e.key==='r'||e.key==='R'){e.preventDefault();if(st.wrong.length)startRound(shuffle(st.wrong),st.round+1);}
       else if(e.key==='Enter'){e.preventDefault();opt.restart();}
       return;
     }
@@ -366,8 +410,8 @@ function Quiz(root,opt){
       else if(e.key==='Escape'){e.preventDefault();if(!st.checked)check(true);}
     } else {
       if(e.key===' '){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;}}
-      else if(e.key==='ArrowRight'){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;return;}st.ok++;next();}
-      else if(e.key==='ArrowLeft'){e.preventDefault();if(!st.flipped){reveal();st.flipped=true;return;}st.bad++;st.wrong.push(cur());next();}
+      else if(e.key==='ArrowRight'){e.preventDefault();st.ok++;next();}
+      else if(e.key==='ArrowLeft'){e.preventDefault();st.bad++;st.wrong.push(cur());next();}
     }
   }
   return {start,key};
